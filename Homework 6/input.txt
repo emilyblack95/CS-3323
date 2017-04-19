@@ -1,0 +1,6 @@
+112000001 Chris Carson 90 L 112000002 
+Ben Christie 50 L  112000003 Bern 
+
+Cruz 80 L 113000004 Donald Clinton 85 E
+113000005 Ted Sanders 90 E 113000006 Carly Fiorina 98 L
+113000007 Hillary Trump 50 E
