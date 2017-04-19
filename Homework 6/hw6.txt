@@ -1,0 +1,143 @@
+# Emily Black
+# 04/13/17
+# Assignment 6 - Python Project
+# Python Version 3.5
+
+class Student(object):
+    def __init__(self, sid, fn, ln, score, eorl):
+        self.sid = sid
+        self.fn = fn
+        self.ln = ln
+        self.score = score
+        self.eorl = eorl
+
+numOfStudents = 0
+listOfStudents = []
+
+# Opens file and reads content
+file = open("input.txt", "r")
+content = file.read().split()
+
+# Go through list and determine how many students there are
+for x in content:
+    if len(x) == 9 and x.isdigit():
+        numOfStudents += 1
+
+# Go back through content, and parse data. Elem holds value and index holds index
+for index, elem in enumerate(content):
+    # If we hit a student ID
+    if len(elem) == 9 and elem.isdigit():
+        listOfStudents.append(Student(content[index], content[index+1], content[index+2], content[index+3], content[index+4]))
+
+# Merge sort that sorts students by score
+def sortByScore(alist):
+    if len(alist) < 2:
+        return alist;
+    else:
+        mid = int(len(alist)/2)
+        lefthalf = alist[:mid]
+        righthalf = alist[mid:]
+        sortByScore(lefthalf)
+        sortByScore(righthalf)
+        i=0
+        j=0
+        k=0
+    while i < len(lefthalf) and j < len(righthalf):
+        if lefthalf[i].score < righthalf[j].score:
+            alist[k]=lefthalf[i]
+            i=i+1
+        elif lefthalf[i].score > righthalf[j].score:
+            alist[k]=righthalf[j]
+            j=j+1
+        else:
+            if lefthalf[i].eorl == 'E' and righthalf[j].eorl == 'L':
+                alist[k]=righthalf[j]
+                j=j+1
+            else:
+                alist[k]=lefthalf[i]
+                i=i+1
+        k=k+1
+    while i < len(lefthalf):
+        alist[k]=lefthalf[i]
+        i=i+1
+        k=k+1
+    while j < len(righthalf):
+        alist[k]=righthalf[j]
+        j=j+1
+        k=k+1
+
+# Sorts list by grade
+sortByScore(listOfStudents)
+listOfStudents.reverse()
+
+# Assigns the students grades
+cutoff = numOfStudents//3
+lowest = -(-numOfStudents//10)
+for index, elem in enumerate(listOfStudents):
+    if len(listOfStudents)-index > lowest:
+        if index < cutoff:
+            elem.score = 'A'
+        elif index < int(2*cutoff):
+            elem.score = 'B'
+        elif elem.eorl == 'E':
+            elem.score = 'C'
+        elif elem.eorl == 'L':
+            elem.score = 'D'
+    else:
+        elem.score = 'F'
+
+# Merge sort that sorts students by last name
+def sortByLastName(alist):
+    if len(alist) < 2:
+        return alist;
+    else:
+        mid = int(len(alist)/2)
+        lefthalf = alist[:mid]
+        righthalf = alist[mid:]
+        sortByLastName(lefthalf)
+        sortByLastName(righthalf)
+        i=0
+        j=0
+        k=0
+    while i < len(lefthalf) and j < len(righthalf):
+        if lefthalf[i].ln < righthalf[j].ln:
+            alist[k]=lefthalf[i]
+            i=i+1
+        elif lefthalf[i].ln > righthalf[j].ln:
+            alist[k]=righthalf[j]
+            j=j+1
+        else:
+            if lefthalf[i].fn < righthalf[j].fn:
+                alist[k]=lefthalf[i]
+                i=i+1
+            else:
+                alist[k]=righthalf[j]
+                j=j+1
+        k=k+1
+    while i < len(lefthalf):
+        alist[k]=lefthalf[i]
+        i=i+1
+        k=k+1
+    while j < len(righthalf):
+        alist[k]=righthalf[j]
+        j=j+1
+        k=k+1
+
+# Sorts list by last name.
+sortByLastName(listOfStudents)
+
+# Creates table for HTML output
+def create_table(listOfStudents):
+    output = ''
+    for index, elem in enumerate(listOfStudents):
+        output += '<tr><td>' + elem.sid + '</td><td>' + elem.fn + '</td><td>' + elem.ln + '</td><td>' + elem.score + '</td></tr>'
+    return output;
+
+# Output data to HTML file
+f = open('output.html','w')
+
+message = """
+<html><head></head><body><table><tr><th>Student ID</th><th>First Name</th><th>Last Name</th><th>Grade</th></tr>""" + create_table(listOfStudents) + """</table></body></html>"""
+
+f.write(message)
+f.close()
