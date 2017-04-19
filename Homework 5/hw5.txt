@@ -1,0 +1,120 @@
+#lang racket
+; Emily Black
+; 03/31/17
+; Assignment 5 - Scheme Project
+
+
+; Polynomial Modulus.
+
+(define (poly_mod apol bpol)
+  (if (null? apol)
+      '()
+      (if (null? bpol)
+          -1
+          (reverse_list (mod_calc (reverse_list apol) (reverse_list bpol)))
+          )
+      )
+  )
+
+; Polynomial Derivative.
+
+(define (poly_der apol)
+  (if (null? apol)
+      '()
+      (der_calc (cdr apol) 1)
+      )
+  )
+
+; Polynomial Addition.
+
+(define (poly_add apol bpol) 
+  (if (null? apol)
+      bpol
+      (if (null? bpol)
+          apol
+          (cons ( + (car apol) (car bpol))(poly_add (cdr apol) (cdr bpol)))
+          )
+      )
+  )
+
+; Polynomial Multiplication.
+
+(define (poly_mul apol bpol)
+  (if (null? apol)
+      '()
+      (if (null? bpol)
+          '()
+          (poly_add (mult_list (car apol) bpol) (poly_mul (cdr apol) (cons 0 bpol)))
+          )
+      )
+  )
+
+; Polynomial Subtraction WITH removal of zeroes.
+
+(define (poly_sub apol bpol)
+  (if (null? apol)
+      (mult_list -1 bpol)
+      (if (null? bpol)
+          apol
+          (remove_zero (cons (- (car apol) (car bpol)) (poly_sub (cdr apol) (cdr bpol))))
+          )
+      )
+  )
+
+; Polynomial Subtraction WITHOUT removal of zeroes.
+
+(define (poly_sub1 apol bpol)
+  (if (null? apol)
+      (mult_list -1 bpol)
+      (if (null? bpol)
+          apol
+          (cons (- (car apol) (car bpol)) (poly_sub (cdr apol) (cdr bpol)))
+          )
+      )
+  )
+
+; Calculates the modulus of two lists.
+
+(define (mod_calc apol bpol)
+  (if (< (length apol) (length bpol)) 
+      (remove_zero apol)
+      (mod_calc (cdr (poly_sub1 apol (mult_list (/ (car apol) (car bpol)) bpol))) bpol)
+      )
+  )
+
+; Takes a list and the first index and calculates it's derivative.
+
+(define (der_calc apol x)
+  (if (null? apol)
+      '()
+      (cons (* x (car apol)) (der_calc (cdr apol) (+ x 1)))
+      )
+  )
+
+; Multiplies given list with given number.
+
+(define (mult_list x apol)
+  (if (null? apol) '()
+      (cons (* x (car apol)) (mult_list x (cdr apol)))
+      )
+  )
+
+; Removes all leading zeroes from a list.
+
+(define (remove_zero apol) 
+  (if (null? apol)
+      '()
+      (if (= 0 (car apol))
+          (remove_zero (cdr apol))
+          apol
+          )
+      )
+  )
+
+; Reverses a list.
+
+(define (reverse_list apol)
+  (if (null? apol) '()
+      (append (reverse_list (cdr apol)) (list (car apol)))
+      )
+  )
